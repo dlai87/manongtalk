@@ -254,6 +254,116 @@
             
               
                 
+                <a class="post-title-link" href="/2016/09/18/2016-09-16-bridge/" itemprop="url">
+                  桥接模式(Bridge)
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-09-18T22:18:30-04:00" content="2016-09-18">
+              2016-09-18
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>概念</strong></p>
+<p>桥接模式(Bridge)是用于把抽象化与实现化解耦，使得二者可以独立变化。这种类型的设计模式属于结构型模式，它通过提供抽象化和实现化之间的桥接结构，来实现二者的解耦。这种模式涉及到一个作为桥接的接口，使得实体类的功能独立于接口实现类。这两种类型的类可被结构化改变而互不影响。</p>
+<p><strong>用途</strong></p>
+<p>我们通过下面的实例来演示桥接模式（Bridge Pattern）的用法。其中，可以使用相同的抽象类方法但是不同的桥接实现类，来画出不同颜色的圆。</p>
+<p><em>意图：</em>将抽象部分与实现部分分离，使它们都可以独立的变化。<br><em>主要解决：</em>在有多种可能会变化的情况下，用继承会造成类爆炸问题，扩展起来不灵活。<br><em>何时使用：</em>实现系统可能有多个角度分类，每一种角度都可能变化。<br><em>如何解决：</em>把这种多角度分类分离出来，让它们独立变化，减少它们之间耦合。<br><em>关键代码：</em>抽象类依赖实现类。</p>
+<p><em>优点：</em><br>1、抽象和实现的分离。<br>2、优秀的扩展能力。<br>3、实现细节对客户透明。</p>
+<p><em>缺点：</em><br>桥接模式的引入会增加系统的理解与设计难度，由于聚合关联关系建立在抽象层，要求开发者针对抽象进行设计与编程。</p>
+<p><em>使用场景：</em><br>1、如果一个系统需要在构件的抽象化角色和具体化角色之间增加更多的灵活性，避免在两个层次之间建立静态的继承联系，通过桥接模式可以使它们在抽象层建立一个关联关系。<br>2、对于那些不希望使用继承或因为多层次继承导致系统类的个数急剧增加的系统，桥接模式尤为适用。<br>3、一个类存在两个独立变化的维度，且这两个维度都需要进行扩展。<br><em>注意事项：</em>对于两个独立变化的维度，使用桥接模式再适合不过了。</p>
+<p><strong>实现</strong><br>我们有一个作为桥接实现的 DrawAPI 接口和实现了 DrawAPI 接口的实体类 RedCircle、GreenCircle。Shape 是一个抽象类，将使用 DrawAPI 的对象。BridgePatternDemo，我们的演示类使用 Shape 类来画出不同颜色的圆。</p>
+<img src="/2016/09/18/2016-09-16-bridge/bridge.png" alt="桥接模式的 UML 图" title="桥接模式的 UML 图">
+<p>创建桥接实现接口。<br>DrawAPI.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface DrawAPI &#123;</div><div class="line">   public void drawCircle(int radius, int x, int y);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建实现了 DrawAPI 接口的实体桥接实现类。<br>RedCircle.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class RedCircle implements DrawAPI &#123;</div><div class="line">   @Override</div><div class="line">   public void drawCircle(int radius, int x, int y) &#123;</div><div class="line">      System.out.println(&quot;Drawing Circle[ color: red, radius: &quot;</div><div class="line">         + radius +&quot;, x: &quot; +x+&quot;, &quot;+ y +&quot;]&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>GreenCircle.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class GreenCircle implements DrawAPI &#123;</div><div class="line">   @Override</div><div class="line">   public void drawCircle(int radius, int x, int y) &#123;</div><div class="line">      System.out.println(&quot;Drawing Circle[ color: green, radius: &quot;</div><div class="line">         + radius +&quot;, x: &quot; +x+&quot;, &quot;+ y +&quot;]&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用 DrawAPI 接口创建抽象类 Shape。<br>Shape.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public abstract class Shape &#123;</div><div class="line">   protected DrawAPI drawAPI;</div><div class="line">   protected Shape(DrawAPI drawAPI)&#123;</div><div class="line">      this.drawAPI = drawAPI;</div><div class="line">   &#125;</div><div class="line">   public abstract void draw();  </div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建实现了 Shape 接口的实体类。<br>Circle.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">public class Circle extends Shape &#123;</div><div class="line">   private int x, y, radius;</div><div class="line"></div><div class="line">   public Circle(int x, int y, int radius, DrawAPI drawAPI) &#123;</div><div class="line">      super(drawAPI);</div><div class="line">      this.x = x;  </div><div class="line">      this.y = y;  </div><div class="line">      this.radius = radius;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   public void draw() &#123;</div><div class="line">      drawAPI.drawCircle(radius,x,y);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用 Shape 和 DrawAPI 类画出不同颜色的圆。<br>BridgePatternDemo.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class BridgePatternDemo &#123;</div><div class="line">   public static void main(String[] args) &#123;</div><div class="line">      Shape redCircle = new Circle(100,100, 10, new RedCircle());</div><div class="line">      Shape greenCircle = new Circle(100,100, 10, new GreenCircle());</div><div class="line"></div><div class="line">      redCircle.draw();</div><div class="line">      greenCircle.draw();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>验证输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">Drawing Circle[ color: red, radius: 10, x: 100, 100]</div><div class="line">Drawing Circle[  color: green, radius: 10, x: 100, 100]</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/18/2016-09-16-prototype/" itemprop="url">
                   原型模式（Prototype Pattern）
                 </a>
@@ -1369,114 +1479,13 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/08/31/2016-8-31-fenng/" itemprop="url">
-                  也谈两句fenng的事
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-08-31T08:55:29-04:00" content="2016-08-31">
-              2016-08-31
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>最近圈里一个热门话题是一个丁香园的员工深扒fenng作为CTO如何失职。fenng对此也做了专门回应。看完双方的原帖后。有一点事情貌似两个人都没有异议：</p>
-<p>那就是fenng不具备写代码的能力。</p>
-<p>OK，我以为事情到这里已经很明了了，没想到竟然引发无数网友对于CTO到底要不要会写代码的激烈讨论。甚至有一帮人理直气壮大有一番“当CTO就是不会写怎么滴”的架势。</p>
-<p>我们先从体育说起，比如足球、篮球、排球等等运动，教练员一般分为两派：运动员转型或者学院出身。但不管什么派别，作为一个运动参与者，没有一定程度的训练经历是不可能非常深刻地理解一项运动的，所谓的“一定程度”，可以理解为自己参与过专业教练的训练，而且长期对训练和比赛过程有一手观察和记录，最好有专业师傅带着。而这里，所谓的“非运动员出身”，只不过是没有打过TA将要执教的专业级别的比赛而已，并不是完全没有参与过这项运动。虽然他身体的硬件条件和运动天赋不够成为优秀的运动员。但是如果有足够的悟性还是可以成为一名好教练。</p>
-<p>同理，要能成为一名优秀的技术领导者，没有一定程度的实践经验是不行的。写代码用的是脑袋和手指，只要这几个器官功能还正常，花时间精力去研究技术，都能写好代码。当上技术领导者以后，可以不参与编程的具体工作，但是还是要有足够的技术直觉，即敏锐察觉出技术的薄弱环节，知道哪些事情的轻重缓急，知道技术应该往哪个方向发展。这些能力，没有几年的实践经验做累积是根本不能具备的。在这个写代码出身的CEO一抓一大把的年代，还在讨论CTO是不是要会写代码，真是可笑。</p>
-<p>fenng的文笔很不错，也给丁香园做了很好的宣传，但是在我看来，他作为CTO就是水货，</p>
-<p>这让我想起了亲身经历过的另一个水货CTO。美国最顶级名校，几百篇论文发表，各种大公司头衔，你到youtube上一搜可以搜出长串他的演讲。当初公司没经验，重金把他招来做CTO。来了慢慢发现,大事不妙，这货真是技术小白，用一个新词形容最为恰当“首席产品体验师”＋“首席邮件挑错师”.他把公司有限的人力资源浪费在无休止的折腾上，几个月来公司技术层面几乎止步不前。幸好，CEO是个明眼人，当机立断把他炒了。从这件事学的几点教训：</p>
-<ol>
-<li>CTO是可选项，并非一个公司的标配。</li>
-<li>即使背景看起来很牛逼也并不一定是真牛逼</li>
-<li>会写代码的能力是对CTO的起码要求。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+  </nav>
+
 
 
           </div>
@@ -1515,7 +1524,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">10</span>
+              <span class="site-state-item-count">11</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
