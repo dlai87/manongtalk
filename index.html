@@ -254,6 +254,216 @@
             
               
                 
+                <a class="post-title-link" href="/2016/10/05/2016-10-05-proxy/" itemprop="url">
+                  代理模式（Proxy Pattern）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-05T23:45:54-04:00" content="2016-10-05">
+              2016-10-05
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>概念</strong></p>
+<p>在代理模式（Proxy Pattern）中，一个类代表另一个类的功能。这种类型的设计模式属于结构型模式。在代理模式中，我们创建具有现有对象的对象，以便向外界提供功能接口。</p>
+<p><em>意图：</em>为其他对象提供一种代理以控制对这个对象的访问。<br><em>主要解决：</em>在直接访问对象时带来的问题，比如说：要访问的对象在远程的机器上。在面向对象系统中，有些对象由于某些原因（比如对象创建开销很大，或者某些操作需要安全控制，或者需要进程外的访问），直接访问会给使用者或者系统结构带来很多麻烦，我们可以在访问此对象时加上一个对此对象的访问层。<br><em>何时使用：</em>想在访问一个类时做一些控制。<br><em>如何解决：</em>增加中间层。<br><em>关键代码：</em>实现与被代理类组合。<br><em>优点：</em><br>1、职责清晰。<br>2、高扩展性。<br>3、智能化。<br><em>缺点：</em><br>1、由于在客户端和真实主题之间增加了代理对象，因此有些类型的代理模式可能会造成请求的处理速度变慢。<br>2、实现代理模式需要额外的工作，有些代理模式的实现非常复杂。<br><em>使用场景：</em>按职责来划分，通常有以下使用场景： 1、远程代理。 2、虚拟代理。 3、Copy-on-Write 代理。 4、保护（Protect or Access）代理。 5、Cache代理。 6、防火墙（Firewall）代理。 7、同步化（Synchronization）代理。 8、智能引用（Smart Reference）代理。<br><em>注意事项：</em><br>1、和适配器模式的区别：适配器模式主要改变所考虑对象的接口，而代理模式不能改变所代理类的接口。<br>2、和装饰器模式的区别：装饰器模式为了增强功能，而代理模式是为了加以控制。</p>
+<p>我们将创建一个 Image 接口和实现了 Image 接口的实体类。ProxyImage 是一个代理类，减少 RealImage 对象加载的内存占用。<br>ProxyPatternDemo，我们的演示类使用 ProxyImage 来获取要加载的 Image 对象，并按照需求进行显示。</p>
+
+<p>创建一个接口。<br>Image.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Image &#123;</div><div class="line">   void display();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>步骤 2<br>创建实现接口的实体类。<br>RealImage.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line">public class RealImage implements Image &#123;</div><div class="line"></div><div class="line">   private String fileName;</div><div class="line"></div><div class="line">   public RealImage(String fileName)&#123;</div><div class="line">      this.fileName = fileName;</div><div class="line">      loadFromDisk(fileName);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void display() &#123;</div><div class="line">      System.out.println(&quot;Displaying &quot; + fileName);</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   private void loadFromDisk(String fileName)&#123;</div><div class="line">      System.out.println(&quot;Loading &quot; + fileName);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>ProxyImage.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">public class ProxyImage implements Image&#123;</div><div class="line"></div><div class="line">   private RealImage realImage;</div><div class="line">   private String fileName;</div><div class="line"></div><div class="line">   public ProxyImage(String fileName)&#123;</div><div class="line">      this.fileName = fileName;</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void display() &#123;</div><div class="line">      if(realImage == null)&#123;</div><div class="line">         realImage = new RealImage(fileName);</div><div class="line">      &#125;</div><div class="line">      realImage.display();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>当被请求时，使用 ProxyImage 来获取 RealImage 类的对象。<br>ProxyPatternDemo.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public class ProxyPatternDemo &#123;</div><div class="line">   </div><div class="line">   public static void main(String[] args) &#123;</div><div class="line">      Image image = new ProxyImage(&quot;test_10mb.jpg&quot;);</div><div class="line"></div><div class="line">      //图像将从磁盘加载</div><div class="line">      image.display(); </div><div class="line">      System.out.println(&quot;&quot;);</div><div class="line">      //图像将无法从磁盘加载</div><div class="line">      image.display();  </div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>验证输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Loading test_10mb.jpg</div><div class="line">Displaying test_10mb.jpg</div><div class="line"></div><div class="line">Displaying test_10mb.jpg</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+                <a class="post-title-link" href="/2016/10/05/2016-10-05-facade/" itemprop="url">
+                  外观模式（Facade Pattern）
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-05T23:26:02-04:00" content="2016-10-05">
+              2016-10-05
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>概念</strong></p>
+<p>外观模式（Facade Pattern）隐藏系统的复杂性，并向客户端提供了一个客户端可以访问系统的接口。这种类型的设计模式属于结构型模式，它向现有的系统添加一个接口，来隐藏系统的复杂性。<br>这种模式涉及到一个单一的类，该类提供了客户端请求的简化方法和对现有系统类方法的委托调用。</p>
+<p><em>意图：</em>为子系统中的一组接口提供一个一致的界面，外观模式定义了一个高层接口，这个接口使得这一子系统更加容易使用。<br><em>主要解决：</em>降低访问复杂系统的内部子系统时的复杂度，简化客户端与之的接口。<br><em>何时使用：</em><br>1、客户端不需要知道系统内部的复杂联系，整个系统只需提供一个”接待员”即可。<br>2、定义系统的入口。<br><em>如何解决：</em>客户端不与系统耦合，外观类与系统耦合。<br><em>关键代码：</em>在客户端和复杂系统之间再加一层，这一次将调用顺序、依赖关系等处理好。</p>
+<p><em>优点：</em><br>1、减少系统相互依赖。<br>2、提高灵活性。<br>3、提高了安全性。<br><em>缺点：</em>不符合开闭原则，如果要改东西很麻烦，继承重写都不合适。<br><em>使用场景：</em><br>1、为复杂的模块或子系统提供外界访问的模块。<br>2、子系统相对独立。<br>3、预防低水平人员带来的风险。<br><em>注意事项：</em>在层次化结构中，可以使用外观模式定义系统中每一层的入口。</p>
+<p><strong>实现</strong></p>
+<p>我们将创建一个 Shape 接口和实现了 Shape 接口的实体类。下一步是定义一个外观类 ShapeMaker。<br>ShapeMaker 类使用实体类来代表用户对这些类的调用。FacadePatternDemo，我们的演示类使用 ShapeMaker 类来显示结果。</p>
+
+<p>创建一个接口。<br>Shape.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">public interface Shape &#123;</div><div class="line">   void draw();</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建实现接口的实体类。<br>Rectangle.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Rectangle implements Shape &#123;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void draw() &#123;</div><div class="line">      System.out.println(&quot;Rectangle::draw()&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Square.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Square implements Shape &#123;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void draw() &#123;</div><div class="line">      System.out.println(&quot;Square::draw()&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>Circle.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">public class Circle implements Shape &#123;</div><div class="line"></div><div class="line">   @Override</div><div class="line">   public void draw() &#123;</div><div class="line">      System.out.println(&quot;Circle::draw()&quot;);</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建一个外观类。<br>ShapeMaker.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">public class ShapeMaker &#123;</div><div class="line">   private Shape circle;</div><div class="line">   private Shape rectangle;</div><div class="line">   private Shape square;</div><div class="line"></div><div class="line">   public ShapeMaker() &#123;</div><div class="line">      circle = new Circle();</div><div class="line">      rectangle = new Rectangle();</div><div class="line">      square = new Square();</div><div class="line">   &#125;</div><div class="line"></div><div class="line">   public void drawCircle()&#123;</div><div class="line">      circle.draw();</div><div class="line">   &#125;</div><div class="line">   public void drawRectangle()&#123;</div><div class="line">      rectangle.draw();</div><div class="line">   &#125;</div><div class="line">   public void drawSquare()&#123;</div><div class="line">      square.draw();</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>使用该外观类画出各种类型的形状。<br>FacadePatternDemo.java<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class FacadePatternDemo &#123;</div><div class="line">   public static void main(String[] args) &#123;</div><div class="line">      ShapeMaker shapeMaker = new ShapeMaker();</div><div class="line"></div><div class="line">      shapeMaker.drawCircle();</div><div class="line">      shapeMaker.drawRectangle();</div><div class="line">      shapeMaker.drawSquare();		</div><div class="line">   &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>验证输出。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">Circle::draw()</div><div class="line">Rectangle::draw()</div><div class="line">Square::draw()</div></pre></td></tr></table></figure></p>
+
+          
+        
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/09/19/2016-09-19-decorate/" itemprop="url">
                   装饰器模式（Decorator Pattern）
                 </a>
@@ -1170,284 +1380,6 @@
 
 
     
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/09/04/2016-09-04-abs-factory/" itemprop="url">
-                  抽象工厂模式 (Abstract Factory Pattern)
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-04T21:36:43-04:00" content="2016-09-04">
-              2016-09-04
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>工厂模式的简单回顾</strong></p>
-<p>在介绍了简单工厂模式和工厂方法模式之后，相信很多人对工厂模式（如果单独提到工厂模式，即包括简单工厂模式、工厂方法模式及本文即将介绍的抽象工厂模式）的思想都有了一定的理解。这里我们在简单回顾一下。</p>
-<p>工厂模式的主要功能就是帮助我们实例化对象的。之所以名字中包含工厂模式四个字，是因为对象的实例化过程是通过工厂实现的，是用工厂方法代替new操作的。</p>
-<p>这样做的好处是封装了对象的实例化细节，尤其是对于实例化较复杂或者对象的生命周期应该集中管理的情况。会给你系统带来更大的可扩展性和尽量少的修改量。</p>
-<p><strong>简单工厂模式的优缺点</strong></p>
-<p>优点：<br>1、屏蔽产品的具体实现，调用者只关心产品的接口。<br>2、实现简单</p>
-<p>缺点：<br>1、增加产品，需要修改工厂类，不符合开放-封闭原则<br>2、工厂类集中了所有实例的创建逻辑，违反了高内聚责任分配原则</p>
-<p><strong>工厂方法模式的优缺点</strong></p>
-<p>优点：<br>1、继承了简单工厂模式的优点<br>2、符合开放-封闭原则</p>
-<p>缺点：<br>1、增加产品，需要增加新的工厂类，导致系统类的个数成对增加，在一定程度上增加了系统的复杂性。</p>
-<p>本文要介绍了抽象工厂模式，是在简单工厂模式和工厂方法模式的基础上衍生出的另外一种创建型设计模式。</p>
-<p><strong>概念</strong></p>
-<p>抽象工厂模式(Abstract Factory Pattern)：提供一个创建一系列相关或相互依赖对象的接口，而无须指定它们具体的类。抽象工厂模式又称为Kit模式，属于对象创建型模式。</p>
-<p>抽象工厂模式提供了一种方式，可以将同一产品族的单独的工厂封装起来。在正常使用中，客户端程序需要创建抽象工厂的具体实现，然后使用抽象工厂作为接口来创建这一主题的具体对象。客户端程序不需要知道（或关心）它从这些内部的工厂方法中获得对象的具体类型，因为客户端程序仅使用这些对象的通用接口。抽象工厂模式将一组对象的实现细节与他们的一般使用分离开来。</p>
-<p><strong>产品族</strong></p>
-<p>来认识下什么是产品族: 位于不同产品等级结构中,功能相关的产品组成的家族。如下面的例子，就有两个产品族：跑车族和商务车族。</p>
-<img src="/2016/09/04/2016-09-04-abs-factory/abstructFactory1.png" alt="产品族" title="产品族">
-<p><strong>用途</strong></p>
-<p>抽象工厂模式和工厂方法模式一样，都符合开放-封闭原则。但是不同的是，工厂方法模式在增加一个具体产品的时候，都要增加对应的工厂。但是抽象工厂模式只有在新增一个类型的具体产品时才需要新增工厂。也就是说，工厂方法模式的一个工厂只能创建一个具体产品。而抽象工厂模式的一个工厂可以创建属于一类类型的多种具体产品。工厂创建产品的个数介于简单工厂模式和工厂方法模式之间。</p>
-<p>在以下情况下可以使用抽象工厂模式：</p>
-<p>1)一个系统不应当依赖于产品类实例如何被创建、组合和表达的细节，这对于所有类型的工厂模式都是重要的。<br>2)系统中有多于一个的产品族，而每次只使用其中某一产品族。<br>3)属于同一个产品族的产品将在一起使用，这一约束必须在系统的设计中体现出来。<br>4)系统提供一个产品类的库，所有的产品以同样的接口出现，从而使客户端不依赖于具体实现。</p>
-<p><strong>实现方式</strong></p>
-<p>抽象工厂模式包含如下角色：</p>
-<p>AbstractFactory(抽象工厂)：用于声明生成抽象产品的方法</p>
-<p>ConcreteFactory(具体工厂)：实现了抽象工厂声明的生成抽象产品的方法，生成一组具体产品，这些产品构成了一个产品族，每一个产品都位于某个产品等级结构中；</p>
-<p>AbstractProduct(抽象产品)：为每种产品声明接口，在抽象产品中定义了产品的抽象业务方法；</p>
-<p>Product(具体产品)：定义具体工厂生产的具体产品对象，实现抽象产品接口中定义的业务方法。</p>
-<p>本文的例子采用一个汽车代工厂造汽车的例子。假设我们是一家汽车代工厂商，我们负责给奔驰和特斯拉两家公司制造车子。我们简单的把奔驰车理解为需要加油的车，特斯拉为需要充电的车。其中奔驰车中包含跑车和商务车两种，特斯拉同样也包含奔驰车和商务车。</p>
-<img src="/2016/09/04/2016-09-04-abs-factory/abstructFactory2.png" alt="abstructFactory2.png" title="">
-<p>以上场景，我们就可以把跑车和商务车分别对待，对于跑车有单独的工厂创建，商务车也有单独的工厂。这样，以后无论是再帮任何其他厂商造车，只要是跑车或者商务车我们都不需要再引入工厂。同样，如果我们要增加一种其他类型的车，比如越野车，我们也不需要对跑车或者商务车的任何东西做修改。</p>
-<p>下面是抽象产品，奔驰车和特斯拉车：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">public interface BenzCar &#123;</div><div class="line"></div><div class="line">    //加汽油</div><div class="line">    public void gasUp();</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">public interface TeslaCar &#123;</div><div class="line"></div><div class="line">    //充电</div><div class="line">    public void charge();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>下面是具体产品，奔驰跑车、奔驰商务车、特斯拉跑车、特斯拉商务车：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">public class BenzSportCar implements BenzCar &#123;</div><div class="line">    public void gasUp() &#123;</div><div class="line">        System.out.println(&quot;给我的奔驰跑车加最好的汽油&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class BenzBusinessCar implements BenzCar&#123;</div><div class="line">    public void gasUp() &#123;</div><div class="line">        System.out.println(&quot;给我的奔驰商务车加一般的汽油&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class TeslaSportCar implements TeslaCar &#123;</div><div class="line">    public void charge() &#123;</div><div class="line">        System.out.println(&quot;给我特斯拉跑车冲满电&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class TeslaBusinessCar implements TeslaCar &#123;</div><div class="line">    public void charge() &#123;</div><div class="line">        System.out.println(&quot;给我特斯拉商务车冲满电&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>下面是抽象工厂：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">public interface CarFactory &#123;</div><div class="line"></div><div class="line">    public BenzCar getBenzCar();</div><div class="line">    public TeslaCar getTeslaCar();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>下面是具体工厂：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">public class SportCarFactory implements CarFactory &#123;</div><div class="line">    public BenzCar getBenzCar() &#123;</div><div class="line">        return new BenzSportCar();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public TeslaCar getTeslaCar() &#123;</div><div class="line">        return new TeslaSportCar();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">public class BusinessCarFactory implements CarFactory &#123;</div><div class="line">    public BenzCar getBenzCar() &#123;</div><div class="line">        return new BenzBusinessCar();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public TeslaCar getTeslaCar() &#123;</div><div class="line">        return new TeslaBusinessCar();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>“开闭原则”的倾斜性</strong></p>
-<p>“开闭原则”要求系统对扩展开放，对修改封闭，通过扩展达到增强其功能的目的。对于涉及到多个产品族与多个产品等级结构的系统，其功能增强包括两方面：</p>
-<p>增加产品族：对于增加新的产品族，工厂方法模式很好的支持了“开闭原则”，对于新增加的产品族，只需要对应增加一个新的具体工厂即可，对已有代码无须做任何修改。</p>
-<p>增加新的产品等级结构：对于增加新的产品等级结构，需要修改所有的工厂角色，包括抽象工厂类，在所有的工厂类中都需要增加生产新产品的方法，不能很好地支持“开闭原则”。</p>
-<p>抽象工厂模式的这种性质称为“开闭原则”的倾斜性，抽象工厂模式以一种倾斜的方式支持增加新的产品，它为新产品族的增加提供方便，但不能为新的产品等级结构的增加提供这样的方便。</p>
-<p><strong>三种工厂模式之间的关系</strong></p>
-<p>当抽象工厂模式中每一个具体工厂类只创建一个产品对象，也就是只存在一个产品等级结构时，抽象工厂模式退化成工厂方法模式；</p>
-<p>抽象工厂模式与工厂方法模式最大的区别在于，工厂方法模式针对的是一个产品等级结构，而抽象工厂模式则需要面对多个产品等级结构。</p>
-<p>当工厂方法模式中抽象工厂与具体工厂合并，提供一个统一的工厂来创建产品对象，并将创建对象的工厂方法设计为静态方法时，工厂方法模式退化成简单工厂模式。</p>
-<p><strong>总结</strong></p>
-<p>抽象工厂模式提供一个创建一系列相关或相互依赖对象的接口，而无须指定它们具体的类。抽象工厂模式又称为Kit模式，属于对象创建型模式。</p>
-<p>抽象工厂模式是所有形式的工厂模式中最为抽象和最具一般性的一种形态。</p>
-<p>抽象工厂模式的主要优点是隔离了具体类的生成，使得客户并不需要知道什么被创建，而且每次可以通过具体工厂类创建一个产品族中的多个对象，增加或者替换产品族比较方便，增加新的具体工厂和产品族很方便；主要缺点在于增加新的产品等级结构很复杂，需要修改抽象工厂和所有的具体工厂类，对“开闭原则”的支持呈现倾斜性。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/09/04/2016-09-04-factory-method/" itemprop="url">
-                  工厂方法模式 (Factory Method Pattern)
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-09-04T20:58:05-04:00" content="2016-09-04">
-              2016-09-04
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>概念</strong></p>
-<p>工厂方法模式(Factory Method Pattern)又称为工厂模式，也叫虚拟构造器(Virtual Constructor)模式或者多态工厂(Polymorphic Factory)模式，它属于类创建型模式。工厂方法模式是一种实现了“工厂”概念的面向对象设计模式。就像其他创建型模式一样，它也是处理在不指定对象具体类型的情况下创建对象的问题。工厂方法模式的实质是“定义一个创建对象的接口，但让实现这个接口的类来决定实例化哪个类。工厂方法让类的实例化推迟到子类中进行。”</p>
-<p><strong>用途</strong></p>
-<p>工厂方法模式和简单工厂模式虽然都是通过工厂来创建对象，他们之间最大的不同是——工厂方法模式在设计上完全完全符合“开闭原则”。</p>
-<p>在以下情况下可以使用工厂方法模式：</p>
-<p>1.一个类不知道它所需要的对象的类：在工厂方法模式中，客户端不需要知道具体产品类的类名，只需要知道所对应的工厂即可，具体的产品对象由具体工厂类创建；客户端需要知道创建具体产品的工厂类。</p>
-<p>2.一个类通过其子类来指定创建哪个对象：在工厂方法模式中，对于抽象工厂类只需要提供一个创建产品的接口，而由其子类来确定具体要创建的对象，利用面向对象的多态性和里氏代换原则，在程序运行时，子类对象将覆盖父类对象，从而使得系统更容易扩展。</p>
-<p>3.将创建对象的任务委托给多个工厂子类中的某一个，客户端在使用时可以无须关心是哪一个工厂子类创建产品子类，需要时再动态指定，可将具体工厂类的类名存储在配置文件或数据库中。</p>
-<p><strong>实现方式</strong></p>
-<p>工厂方法模式包含如下角色：</p>
-<p>Product：抽象产品（Operation）</p>
-<p>ConcreteProduct：具体产品(OperationAdd)</p>
-<p>Factory：抽象工厂(IFactory)</p>
-<p>ConcreteFactory：具体工厂(AddFactory)</p>
-<img src="/2016/09/04/2016-09-04-factory-method/factoryMethod.png" alt="工厂方法" title="工厂方法">
-<p>这里还用计算器的例子。在保持Operation，OperationAdd，OperationDiv，OperationSub，OperationMul等几个方法不变的情况下，修改简单工厂模式中的工厂类（OperationFactory）。替代原有的那个”万能”的大工厂类，这里使用工厂方法来代替：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">//工厂接口</div><div class="line">public interface IFactory &#123;</div><div class="line">    Operation CreateOption();</div><div class="line">&#125;</div><div class="line"></div><div class="line">//加法类工厂</div><div class="line">public class AddFactory implements IFactory &#123;</div><div class="line"></div><div class="line">    public Operation CreateOption() &#123;</div><div class="line">        return new OperationAdd();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//除法类工厂</div><div class="line">public class DivFactory implements IFactory &#123;</div><div class="line"></div><div class="line">    public Operation CreateOption() &#123;</div><div class="line">        return new OperationDiv();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//乘法类工厂</div><div class="line">public class MulFactory implements IFactory &#123;</div><div class="line"></div><div class="line">    public Operation CreateOption() &#123;</div><div class="line">        return new OperationMul();</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">//减法类工厂</div><div class="line">public class SubFactory implements IFactory &#123;</div><div class="line"></div><div class="line">    public Operation CreateOption() &#123;</div><div class="line">        return new OperationSub();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>这样，在客户端中想要执行加法运算时，需要以下方式：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">public class Main &#123;</div><div class="line"></div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        IFactory factory = new AddFactory();</div><div class="line">        Operation operationAdd =  factory.CreateOption();</div><div class="line">        operationAdd.setValue1(10);</div><div class="line">        operationAdd.setValue2(5);</div><div class="line">        System.out.println(operationAdd.getResult());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p>到这里，一个工厂方法模式就已经写好了。</p>
-<p>从代码量上看，这种工厂方法模式比简单工厂方法模式更加复杂。针对不同的操作（Operation）类都有对应的工厂。很多人会有以下疑问：</p>
-<p><strong>貌似工厂方法模式比简单工厂模式要复杂的多？<br>工厂方法模式和我自己创建对象没什么区别？为什么要多搞出一些工厂来？</strong></p>
-<p>下面就针对以上两个问题来深入理解一下工厂方法模式。</p>
-<p><strong>工厂方法模式的利与弊</strong></p>
-<p><strong>为什么要使用工厂来创建对象？</strong></p>
-<p>封装对象的创建过程</p>
-<p>在工厂方法模式中，工厂方法用来创建客户所需要的产品，同时还向客户隐藏了哪种具体产品类将被实例化这一细节，用户只需要关心所需产品对应的工厂，无须关心创建细节，甚至无须知道具体产品类的类名。</p>
-<p>基于工厂角色和产品角色的多态性设计是工厂方法模式的关键。它能够使工厂可以自主确定创建何种产品对象，而如何创建这个对象的细节则完全封装在具体工厂内部。工厂方法模式之所以又被称为多态工厂模式，是因为所有的具体工厂类都具有同一抽象父类。</p>
-<p><strong>为什么每种对象要单独有一个工厂？</strong></p>
-<p>符合”开放-封闭原则”</p>
-<p>主要目的是为了解耦。在系统中加入新产品时，无须修改抽象工厂和抽象产品提供的接口，无须修改客户端，也无须修改其他的具体工厂和具体产品，而只要添加一个具体工厂和具体产品就可以了。这样，系统的可扩展性也就变得非常好，完全符合“开闭原则”。</p>
-<p><strong>以上就是工厂方法模式的优点。但是，工厂模式也有一些不尽如人意的地方：</strong></p>
-<p>在添加新产品时，需要编写新的具体产品类，而且还要提供与之对应的具体工厂类，系统中类的个数将成对增加，在一定程度上增加了系统的复杂度，有更多的类需要编译和运行，会给系统带来一些额外的开销。</p>
-<p>由于考虑到系统的可扩展性，需要引入抽象层，在客户端代码中均使用抽象层进行定义，增加了系统的抽象性和理解难度，且在实现时可能需要用到DOM、反射等技术，增加了系统的实现难度。</p>
-<p><strong>工厂方法与简单工厂的区别</strong></p>
-<p>工厂模式克服了简单工厂模式违背开放-封闭原则的缺点，又保持了封装对象创建过程的优点。<br>他们都是集中封装了对象的创建，使得要更换对象时，不需要做大的改动就可实现，降低了客户端与产品对象的耦合。</p>
-<p><strong>总结</strong></p>
-<p>工厂方法模式是简单工厂模式的进一步抽象和推广。</p>
-<p>由于使用了面向对象的多态性，工厂方法模式保持了简单工厂模式的优点，而且克服了它的缺点。</p>
-<p>在工厂方法模式中，核心的工厂类不再负责所有产品的创建，而是将具体创建工作交给子类去做。这个核心类仅仅负责给出具体工厂必须实现的接口，而不负责产品类被实例化这种细节，这使得工厂方法模式可以允许系统在不修改工厂角色的情况下引进新产品。</p>
-<p>工厂方法模式的主要优点是增加新的产品类时无须修改现有系统，并封装了产品对象的创建细节，系统具有良好的灵活性和可扩展性；其缺点在于增加新产品的同时需要增加新的工厂，导致系统类的个数成对增加，在一定程度上增加了系统的复杂性。</p>
-
-          
-        
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
   </section>
 
   
@@ -1493,7 +1425,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">14</span>
+              <span class="site-state-item-count">16</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
